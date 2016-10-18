@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lerkin Survey</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="vendor/bootstrap/css/bootstrap-theme.css" rel="stylesheet" media="screen">
+    <link href="vendor/jquery/jquery-ui.min.css" rel="stylesheet" media="screen">
+    <link href="vendor/jquery/jquery-ui.theme.css" rel="stylesheet" media="screen">
+    <link href="css/main.css" rel="stylesheet" media="screen">
+    <style>
+       #menu {
+          width: 100%;
+       }
+    </style>
+</head>
+<body>
+<!—Тут подключаем jQuery и Bootstrap -->
+<script src="vendor/jquery/external/jquery/jquery.js"></script>
+<script src="vendor/jquery/jquery-ui.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+<!—Здесь подключаем классы приложения -->
+<script src="js/consts.js"></script>
+    <script src="js/respondents.js"></script>
+<script src="js/survey.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/admin.js"></script>
+
+<script src="data/respondents.js"></script>
+<script src="data/questions.js"></script>
+
+<div id="menuDiv">
+    <div class="page-header" onclick="javascript: showResults ();">
+        <center><h3 id="title"></h3></center>
+    </div>
+    <div style="display: none;" id="clearButton">
+        <input type="button" value="Clear all" onclick="javascript: clearAll ();"/><br/><br/>
+    </div>
+    <!—- Дабы не смущать школьников и преподователя, кнопка для демонстрации результатов по умолчанию скрыта -->
+    <div style="display: none;" id="showResults">
+        <input type="button" value="Show results" onclick="javascript: showResults (true);"/><br/><br/>
+    </div>
+    <!—- Область для отображения списка учеников http://www.w3schools.com/bootstrap/bootstrap_list_groups.asp -->
+    <div id="mainPane">
+        <ul class="list-group" id="menu">
+        </ul>
+    </div>
+    <!—Область для отображения результатов -->
+    <div id="resultsPane" style="display: none;">
+        <form method="post" action="http://serj.by/survey/api/storeSurveyData.php" id="storeForm">
+            <textarea name="surveyData" id="surveyData" style="width: 100%; height: 100%;" rows=25>
+            </textarea>
+            <input type="submit" value="Store on server"/>
+            <input type="hidden" name="redirectURL" value="."/>
+        </form>
+    </div>
+</div>
+<div id="thanks"><center>Спасибо за ответы!<br/><br/><input type="button" id="thanksOk" value="Пожалуйста!"/></center></div>
+<script>
+
+var respondents;
+
+var adminMode = true; // после сбора данных активируем кнопку просмотра результатов
+
+function clearAll () {
+   try {
+       if(typeof(Storage) !== "undefined") {
+          this.storage = localStorage;
+       }
+   } catch (e) {
+      alert ("Local storage error: "+e);
+   }
+   this.storage.clear ();
+}
+
+function init () {
+    $("#mainPane").show ();
+    $("#resultsPane").hide ();
+    if (adminMode) $("#showResults").show ();
+
+    $("#thanks").hide ();
+
+    $("#thanksOk").click (function () {
+        $("#thanks.hide");
+        window.init ();
+    });
+
+   $("#title").html ("Выберите ученика");
+   var res = dataRespondents;
+
+    res.forEach (function (element, i, arr) {
+      element.id = i+1;
+    });
+
+   respondents = new Respondents (res);
+   respondents.renderRespondents ($("#menu"));
+
+   $("#storeForm redirectURL").val (document.location.href);
+}
+
+init ();
+</script>
+</body>
+</html>
